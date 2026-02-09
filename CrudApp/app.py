@@ -1,11 +1,16 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, flash
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///employee.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SECRET_KEY'] = 'supersecretkey'
 
 db = SQLAlchemy(app)
+
+# Create tables (for Vercel deployment)
+with app.app_context():
+    db.create_all()
 
 class Employees(db.Model):
     __tablename__ = "employees"   # ✅ explicit table name
