@@ -1,10 +1,12 @@
 from flask import Flask, render_template, request, redirect, flash
 from flask_sqlalchemy import SQLAlchemy
+import os
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///employee.db'
+# Use PostgreSQL on Vercel, SQLite locally
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///employee.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = 'supersecretkey'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'supersecretkey')
 
 db = SQLAlchemy(app)
 
@@ -23,8 +25,12 @@ class Employees(db.Model):
 @app.route('/', methods=['GET', 'POST'])
 def home():
     if request.method == 'POST':
-        name = request.form['name']
-        email = request.form['email']
+        name = request.form.get('name', '').strip()
+        email = request.form.get('email', '').strip()
+
+        if not name or not email:
+            flash("Name and Email are required!", "error")
+            return redirect("/")
 
         employee = Employees(name=name, email=email)
         db.session.add(employee)
