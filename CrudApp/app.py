@@ -69,7 +69,5 @@ def update(sno):
     return render_template("update.html", employee=employee)
 
 
-if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()   # ✅ creates table if not exists
+if __name__ == '__main__': # ✅ creates table if not exists
     app.run(debug=True)
