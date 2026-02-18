@@ -33,9 +33,18 @@ def index():
 @app.route("/register", methods=['GET','POST'])
 def register():
     if request.method == 'POST':
-        name = request.form['name']
-        email = request.form['email']
-        password = request.form['password']
+        name = request.form.get('name', '').strip()
+        email = request.form.get('email', '').strip()
+        password = request.form.get('password', '').strip()
+        
+        # Validate empty fields
+        if not name or not email or not password:
+            return render_template('register.html', error='All fields are required')
+        
+        # Check if user already exists
+        existing_user = User.query.filter_by(email=email).first()
+        if existing_user:
+            return render_template('register.html', error='Email already registered')
         
         new_user = User(name=name, email=email, password=password)
         db.session.add(new_user)
@@ -47,8 +56,12 @@ def register():
 @app.route("/login", methods=['GET','POST'])
 def login():
     if request.method == 'POST':
-        email = request.form['email']
-        password = request.form['password']
+        email = request.form.get('email', '').strip()
+        password = request.form.get('password', '').strip()
+        
+        # Validate empty fields
+        if not email or not password:
+            return render_template('login.html', error='All fields are required')
         
         user = User.query.filter_by(email=email).first()
         
@@ -56,7 +69,7 @@ def login():
             session['email'] = user.email
             return redirect('/dashboard')
         else:
-            return render_template('login.html',error='Invalid Password')
+            return render_template('login.html', error='Invalid email or password')
         
     return render_template("login.html")
 
