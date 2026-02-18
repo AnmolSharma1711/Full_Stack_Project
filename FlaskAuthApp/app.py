@@ -1,11 +1,12 @@
 from flask import Flask, render_template, request, redirect, session
 from flask_sqlalchemy import SQLAlchemy
 import bcrypt
+import os
 
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL", "sqlite:///database.db")
 db = SQLAlchemy(app)
-app.secret_key = 'secret_key'
+app.secret_key = os.environ.get("SECRET_KEY", 'secret_key')
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key = True)
