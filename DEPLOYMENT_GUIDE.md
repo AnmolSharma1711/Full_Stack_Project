@@ -78,7 +78,7 @@ Fill in the following details:
 | **Environment** | `Python 3` |
 | **Region** | Choose closest to you |
 | **Branch** | `main` |
-| **Build Command** | `pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate` |
+| **Build Command** | `bash build.sh` |
 | **Start Command** | `gunicorn auth_blog.wsgi:application` |
 
 ### 3.4 Add Environment Variables
@@ -89,9 +89,13 @@ Click **"Add Environment Variable"** and add these:
 SECRET_KEY=<paste your secret key from Step 2>
 DEBUG=False
 ALLOWED_HOSTS=auth-blog.onrender.com
+DJANGO_SUPERUSER_PASSWORD=YourSecurePassword123
 ```
 
-**Important:** Replace `auth-blog` with your actual Render app name.
+**Important:** 
+- Replace `auth-blog` with your actual Render app name
+- Replace `YourSecurePassword123` with a strong password
+- After deployment, login to admin and change this password immediately!
 
 #### Get Your App URL:
 After deployment starts, Render will give you a URL like:
@@ -113,25 +117,38 @@ Update `ALLOWED_HOSTS` with this URL.
 
 ---
 
-## STEP 4: Initialize Database on Render
+## STEP 4: Create Superuser (Free Method - No Shell Needed)
 
-After first deployment, you need to create a superuser:
+We've created a `build.sh` script that automatically creates a superuser during deployment!
 
-### Option A: Using Render Shell (Recommended)
+### Superuser Created via Build Script ✅
+
+The `build.sh` file will:
+1. Install all dependencies
+2. Collect static files
+3. Run database migrations
+4. Create a superuser with username `admin` automatically
+
+### Set Superuser Password in Render Dashboard
 
 1. Go to your Render dashboard
-2. Click your web service
-3. Go to **"Shell"** tab
-4. Run:
-```bash
-python manage.py createsuperuser
-```
+2. Click on your **auth-blog** web service
+3. Go to **"Environment"** tab
+4. Add environment variable:
+   - `DJANGO_SUPERUSER_PASSWORD=YourSecurePassword123`
 
-### Option B: Using Django Admin Panel
+5. Click **"Save"** and Render will automatically rebuild
+6. After build completes, superuser `admin` is created! ✅
 
-Once deployed, you can access Django admin temporarily by:
+### Access Django Admin
+
+After deployment:
 1. Visit `https://your-app.onrender.com/admin/`
-2. Create a superuser through the panel if available
+2. Login with:
+   - **Username:** `admin`
+   - **Password:** `YourSecurePassword123` (the password you set)
+
+⚠️ **Important:** Change this password immediately after first login!
 
 ---
 
