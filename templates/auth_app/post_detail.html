@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ post.title }} - My Blog{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-body">
+                <h1 class="card-title mb-3">{{ post.title }}</h1>
+                
+                <div class="mb-4 text-muted">
+                    <p>
+                        By <strong>{{ post.author.username }}</strong> on 
+                        <strong>{{ post.created_at|date:"M d, Y \a\t H:i" }}</strong>
+                    </p>
+                </div>
+                
+                {% if post.image %}
+                    <div class="mb-4">
+                        <img src="{{ post.image.url }}" alt="{{ post.title }}" class="img-fluid rounded" style="max-width: 100%; height: auto;">
+                    </div>
+                {% endif %}
+                
+                <div class="mb-4" style="line-height: 1.8;">
+                    {{ post.content }}
+                </div>
+                
+                <hr>
+                
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <a href="{% url 'home' %}" class="btn btn-secondary">← Back to Posts</a>
+                    
+                    {% if user.is_authenticated and user == post.author or user.is_superuser %}
+                        <div class="d-flex gap-2">
+                            <a href="{% url 'edit_post' post.id %}" class="btn btn-warning">
+                                ✏️ Edit
+                            </a>
+                            <a href="{% url 'delete_post' post.id %}" class="btn btn-danger">
+                                🗑️ Delete
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Comment Section Placeholder -->
+        <div class="card shadow mt-4">
+            <div class="card-body">
+                <h5 class="card-title">💬 Comments (Coming Soon)</h5>
+                <p class="text-muted">Comment section will be available soon!</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

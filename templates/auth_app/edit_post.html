@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Post - My Blog{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-body">
+                <h2 class="card-title mb-4">✏️ Edit Post</h2>
+                
+                <form method="post" enctype="multipart/form-data" novalidate>
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="id_title" class="form-label">Post Title</label>
+                        <input type="text" class="form-control" id="id_title" name="title" value="{{ form.instance.title }}" required>
+                        {% if form.title.errors %}
+                            <small class="text-danger d-block">{{ form.title.errors }}</small>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_content" class="form-label">Content</label>
+                        <textarea class="form-control" id="id_content" name="content" rows="8" required>{{ form.instance.content }}</textarea>
+                        {% if form.content.errors %}
+                            <small class="text-danger d-block">{{ form.content.errors }}</small>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_image" class="form-label">Post Image</label>
+                        {% if form.instance.image %}
+                            <div class="mb-2">
+                                <img src="{{ form.instance.image.url }}" alt="{{ form.instance.title }}" style="max-width: 200px; height: auto;">
+                                <p class="text-muted small">Current image</p>
+                            </div>
+                        {% endif %}
+                        <input type="file" class="form-control" id="id_image" name="image" accept="image/*">
+                        {% if form.image.errors %}
+                            <small class="text-danger d-block">{{ form.image.errors }}</small>
+                        {% endif %}
+                        <small class="form-text text-muted">Leave empty to keep current image</small>
+                    </div>
+
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {{ form.non_field_errors }}
+                        </div>
+                    {% endif %}
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{% url 'post_detail' post.id %}" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Update Post</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
