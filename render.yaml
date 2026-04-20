@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: auth-blog
+    env: python
+    pythonVersion: 3.12
+    buildCommand: bash build.sh
+    startCommand: gunicorn auth_blog.wsgi:application
+    envVars:
+      - key: SECRET_KEY
+        scope: build,run
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        scope: build,run
+      - key: DJANGO_SUPERUSER_PASSWORD
+        scope: build
