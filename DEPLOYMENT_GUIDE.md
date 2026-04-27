@@ -90,11 +90,13 @@ SECRET_KEY=<paste your secret key from Step 2>
 DEBUG=False
 ALLOWED_HOSTS=auth-blog.onrender.com
 DJANGO_SUPERUSER_PASSWORD=YourSecurePassword123
+CLOUDINARY_URL=cloudinary://API_KEY:API_SECRET@CLOUD_NAME
 ```
 
 **Important:** 
 - Replace `auth-blog` with your actual Render app name
 - Replace `YourSecurePassword123` with a strong password
+- Replace Cloudinary URL with your actual credentials (see Media Upload section)
 - After deployment, login to admin and change this password immediately!
 
 #### Get Your App URL:
@@ -167,7 +169,34 @@ After deployment completes:
 
 ---
 
-## STEP 6: Update Settings (Important!)
+## STEP 6: Trigger Redeploy After Updates
+
+Whenever you push changes to GitHub, Render should auto-deploy. But sometimes you need to manually redeploy:
+
+### Manual Redeploy Steps:
+
+1. Go to [Render Dashboard](https://dashboard.render.com)
+2. Click on your **blog-anmol** service
+3. Click the **"Redeploy"** button (top right area)
+4. Select **"Clear build cache & deploy"** 
+5. Wait 5-10 minutes for deployment
+
+### Monitor Deployment:
+
+- Check the **"Logs"** tab to see build progress
+- Wait for status to change to **"Live ✓"**
+- Once live, refresh your app in browser
+
+### Common Reasons to Redeploy:
+
+- After changing `runtime.txt` (Python version)
+- After updating `requirements.txt`
+- After modifying `settings.py`
+- If you see old Python version errors (like Python 3.14 when you set 3.13)
+
+---
+
+## STEP 7: Update Settings (Important!)
 
 Before deployment, update your settings:
 
@@ -220,12 +249,38 @@ Already configured! WhiteNoise handles this in `settings.py`:
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 ```
 
-### Media Upload Not Working
+### Media Upload Not Working - SOLVED! ✅
 
-**Note:** SQLite database and uploaded images are temporary on Render.
-For production, consider:
-- Using AWS S3 for media storage
-- Using PostgreSQL on Render (paid tier)
+**Setup Cloudinary for Persistent Media Storage**
+
+We've configured your app to use Cloudinary for image storage (free tier available).
+
+#### Steps:
+
+1. **Create Cloudinary Account**
+   - Go to [cloudinary.com](https://cloudinary.com)
+   - Sign up (free tier included)
+   - Go to Dashboard and copy:
+     - Cloud Name
+     - API Key
+     - API Secret
+
+2. **Generate Cloudinary URL**
+   - In your Cloudinary Dashboard, go to **Settings** → **API Keys**
+   - Your URL format is: `cloudinary://API_KEY:API_SECRET@CLOUD_NAME`
+   - Example: `cloudinary://123456789:abcDefGhIj@mycloud`
+
+3. **Add to Render Environment Variables**
+   - Go to your Render service dashboard
+   - **Settings** → **Environment**
+   - Add new variable:
+     - **Key:** `CLOUDINARY_URL`
+     - **Value:** (paste your Cloudinary URL)
+   - Click **Save** and Render will redeploy
+
+4. **Test**
+   - After deployment, create a new post with an image
+   - Images now persist across Render restarts! 🎉
 
 ---
 
